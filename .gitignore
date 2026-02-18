@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+.env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Model cache
+.paddleocr/
+.cache/
+models/
+
+# Storage uploads
+storage/uploads/*
+
+# Temporary OCR files
+temp_*.png
+
+# IDE files
+.vscode/
+.idea/
