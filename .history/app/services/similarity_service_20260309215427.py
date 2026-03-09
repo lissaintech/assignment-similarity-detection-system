@@ -3,7 +3,6 @@ from app.services.embedding_service import EmbeddingService
 from app.db.faiss_db import FAISSDatabase
 from app.services.chunking_service import ChunkingService
 
-
 class SimilarityService:
 
     def __init__(self):
@@ -11,41 +10,26 @@ class SimilarityService:
         self.embedder = EmbeddingService()
         self.db = FAISSDatabase()
         self.chunker = ChunkingService()
+        
 
     def add_assignment(self, file_path: str, file_name: str):
-
         text = self.ocr.extract_text(file_path)
 
-        paragraphs = self.chunker.split_into_paragraphs(text)
+        embedding = self.embedder.generate_text_embedding(text)
 
-        for i, paragraph in enumerate(paragraphs):
-
-            embedding = self.embedder.generate_text_embedding(paragraph)
-
-            paragraph_id = f"{file_name}_p{i}"
-
-            self.db.add_embedding(embedding, paragraph_id)
+        self.db.add_embedding(embedding, file_name)
 
     def check_similarity(self, file_path: str):
-
         text = self.ocr.extract_text(file_path)
 
-        paragraphs = self.chunker.split_into_paragraphs(text)
+        embedding = self.embedder.generate_text_embedding(text)
 
-        all_results = []
-
-        for paragraph in paragraphs:
-
-            embedding = self.embedder.generate_text_embedding(paragraph)
-
-            results = self.db.search(embedding)
-
-            all_results.extend(results)
+        results = self.db.search(embedding)
 
         formatted_results = []
         seen = set()
 
-        for result in all_results:
+        for result in results:
 
             file_name = result["file_name"]
             distance = result["distance"]
